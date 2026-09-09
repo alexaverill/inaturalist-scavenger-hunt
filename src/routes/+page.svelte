@@ -89,6 +89,10 @@
       <h2>{observation.name}</h2>
     </div>
   {/each}
+  <div class="progress">
+    {observations.filter((entry) => entry.checked).length} of {observations.length}
+    found
+  </div>
 </div>
 
 <style>
@@ -120,6 +124,9 @@
       border-radius: 20px;
       display: flex;
       flex-direction: column;
+
+      border: 1px solid #92828d;
+      filter: drop-shadow(0 3px 3px #92828d);
       img {
         object-fit: cover;
         border-radius: 20px 20px 0 0;
@@ -129,6 +136,7 @@
         img {
           filter: grayscale(1);
         }
+        filter: none;
       }
       h2 {
         padding-left: 20px;
@@ -136,7 +144,20 @@
         font-weight: normal;
         font-family: sans-serif;
       }
-      border: 1px solid gray;
     }
+  }
+  .progress {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    padding: 1rem;
+    background-color: #1d84b5;
+    color: #f1f7ed;
+    filter: drop-shadow(0 0 10px #92828d);
   }
 </style>
