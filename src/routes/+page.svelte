@@ -2,6 +2,8 @@
   import { onMount } from "svelte";
 
   let observations = $state([]);
+  let range = $state(3);
+  let listLength = $state(20);
   const getObservations = async (latitude, longitude, radius) => {
     let date = new Date();
     date.setMonth(date.getMonth() - 1);
@@ -90,13 +92,22 @@
 </div>
 
 <style>
+  :global(body) {
+    background-color: #f1f7ed;
+    color: #122c34;
+  }
   .header {
+    font-family: sans-serif;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
     button {
-      height: 50px;
+      background-color: #1d84b5;
+      border: none;
+      border-radius: 10px;
+      color: #f1f7ed;
+      padding: 0.5rem;
     }
   }
   .list {
@@ -104,6 +115,7 @@
     flex-wrap: wrap;
     gap: 1rem;
     .entry {
+      background-color: #7ca982;
       width: 300px;
       border-radius: 20px;
       display: flex;
@@ -113,7 +125,10 @@
         border-radius: 20px 20px 0 0;
       }
       &.checked {
-        background-color: lightgray;
+        background-color: #92828d;
+        img {
+          filter: grayscale(1);
+        }
       }
       h2 {
         padding-left: 20px;
