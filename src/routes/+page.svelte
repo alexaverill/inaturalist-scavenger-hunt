@@ -1,15 +1,15 @@
 <script>
   import { onMount } from "svelte";
-
+  import arrow from "$lib/assets/arrow_right.svg";
   let observations = $state([]);
   let range = $state(3);
-  let listLength = $state(20);
-  const getObservations = async (latitude, longitude, radius) => {
+  let listLength = $state(30);
+  const getObservations = async (latitude, longitude, radius, length) => {
     let date = new Date();
     date.setMonth(date.getMonth() - 1);
     let created = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
     let request = await fetch(
-      `https://api.inaturalist.org/v2/observations?created_d1=${created}&lat=${latitude}&lng=${longitude}&radius=${radius}&per_page=20&order=desc&order_by=observed_on&fields=(photos:(url:!t),species_guess:!t,observed_on:!t)`,
+      `https://api.inaturalist.org/v2/observations?created_d1=${created}&lat=${latitude}&lng=${longitude}&radius=${radius}&per_page=${length}&order=desc&order_by=observed_on&fields=(photos:(url:!t),species_guess:!t,observed_on:!t,taxon:(id:!t,name:!t))`,
     );
     let data = await request.json();
     console.log(data.results);
@@ -28,6 +28,7 @@
         photo,
         observedOn,
         checked: false,
+        taxon: entry.taxon,
       });
     }
     localStorage.setItem("observations", JSON.stringify(observations));
@@ -38,7 +39,7 @@
         (position) => {
           let lat = position.coords.latitude;
           let lng = position.coords.longitude;
-          getObservations(lat, lng, 3);
+          getObservations(lat, lng, range, listLength);
           return position;
         },
         () => {
@@ -63,6 +64,15 @@
 
 <div class="header">
   <h1>iNaturalist Scavenger Hunt</h1>
+  <div class="row">
+    <label
+      >Number of Specimens:<input
+        type="number"
+        bind:value={listLength}
+      /></label
+    >
+    <label>Search Range: <input type="number" bind:value={range} /></label>
+  </div>
   <button
     onclick={() => {
       observations = [];
@@ -86,7 +96,16 @@
       }}
     >
       <img src={observation.photo} />
-      <h2>{observation.name}</h2>
+      <div class="text">
+        <h2>{observation.name}</h2>
+        {#if observation?.taxon}
+          <a
+            href={`https://www.inaturalist.org/taxa/${observation?.taxon.id}`}
+            target="_blank"
+            >{observation?.taxon.name}<img src={arrow} />
+          </a>
+        {/if}
+      </div>
     </div>
   {/each}
   <div class="progress">
@@ -106,6 +125,15 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+    .row {
+      display: flex;
+      flex-direction: row;
+      gap: 2rem;
+      label {
+        display: flex;
+        flex-direction: column;
+      }
+    }
     button {
       background-color: #1d84b5;
       border: none;
@@ -118,6 +146,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
+    margin-bottom: 5rem;
     .entry {
       background-color: #7ca982;
       width: 300px;
@@ -127,6 +156,22 @@
 
       border: 1px solid #92828d;
       filter: drop-shadow(0 3px 3px #92828d);
+      .text {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+      a {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.1rem;
+        text-decoration: none;
+        color: #122c34;
+        img {
+          width: 18px;
+          height: 18px;
+        }
+      }
       img {
         object-fit: cover;
         border-radius: 20px 20px 0 0;
@@ -139,8 +184,6 @@
         filter: none;
       }
       h2 {
-        padding-left: 20px;
-        padding-right: 20px;
         font-weight: normal;
         font-family: sans-serif;
       }
