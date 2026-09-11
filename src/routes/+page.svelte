@@ -62,55 +62,57 @@
   });
 </script>
 
-<div class="header">
-  <h1>iNaturalist Scavenger Hunt</h1>
-  <div class="row">
-    <label
-      >Number of Specimens:<input
-        type="number"
-        bind:value={listLength}
-      /></label
-    >
-    <label>Search Range: <input type="number" bind:value={range} /></label>
-  </div>
-  <button
-    onclick={() => {
-      observations = [];
-      localStorage.removeItem("observations");
-      getLatLong();
-    }}>Start a New Search</button
-  >
-</div>
-<div class="list">
-  {#each observations as observation}
-    <div
-      class="entry"
-      class:checked={observation.checked}
-      onclick={() => {
-        let foundObservation = observations.findIndex(
-          (entry) => entry.id === observation.id,
-        );
-        observations[foundObservation].checked =
-          !observations[foundObservation].checked;
-        localStorage.setItem("observations", JSON.stringify(observations));
-      }}
-    >
-      <img src={observation.photo} />
-      <div class="text">
-        <h2>{observation.name}</h2>
-        {#if observation?.taxon}
-          <a
-            href={`https://www.inaturalist.org/taxa/${observation?.taxon.id}`}
-            target="_blank"
-            >{observation?.taxon.name}<img src={arrow} />
-          </a>
-        {/if}
-      </div>
+<div class="column">
+  <div class="header">
+    <h1>iNaturalist Scavenger Hunt</h1>
+    <div class="row">
+      <label
+        >Number of Specimens:<input
+          type="number"
+          bind:value={listLength}
+        /></label
+      >
+      <label>Search Range: <input type="number" bind:value={range} /></label>
     </div>
-  {/each}
-  <div class="progress">
-    {observations.filter((entry) => entry.checked).length} of {observations.length}
-    found
+    <button
+      onclick={() => {
+        observations = [];
+        localStorage.removeItem("observations");
+        getLatLong();
+      }}>Start a New Search</button
+    >
+  </div>
+  <div class="list">
+    {#each observations as observation}
+      <div
+        class="entry"
+        class:checked={observation.checked}
+        onclick={() => {
+          let foundObservation = observations.findIndex(
+            (entry) => entry.id === observation.id,
+          );
+          observations[foundObservation].checked =
+            !observations[foundObservation].checked;
+          localStorage.setItem("observations", JSON.stringify(observations));
+        }}
+      >
+        <img src={observation.photo} />
+        <div class="text">
+          <h2>{observation.name}</h2>
+          {#if observation?.taxon}
+            <a
+              href={`https://www.inaturalist.org/taxa/${observation?.taxon.id}`}
+              target="_blank"
+              >{observation?.taxon.name}<img src={arrow} />
+            </a>
+          {/if}
+        </div>
+      </div>
+    {/each}
+    <div class="progress">
+      {observations.filter((entry) => entry.checked).length} of {observations.length}
+      found
+    </div>
   </div>
 </div>
 
@@ -118,6 +120,14 @@
   :global(body) {
     background-color: #f1f7ed;
     color: #122c34;
+  }
+  :global(h1, h2) {
+    margin: 0;
+  }
+  .column {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
   }
   .header {
     font-family: sans-serif;
@@ -133,6 +143,10 @@
         display: flex;
         flex-direction: column;
       }
+      @media (max-width: 700px) {
+        flex-direction: column;
+        gap: 1rem;
+      }
     }
     button {
       background-color: #1d84b5;
@@ -141,12 +155,20 @@
       color: #f1f7ed;
       padding: 0.5rem;
     }
+    @media (max-width: 700px) {
+      flex-direction: column;
+      gap: 1rem;
+    }
   }
   .list {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
     margin-bottom: 5rem;
+    @media (max-width: 700px) {
+      justify-content: center;
+      align-items: center;
+    }
     .entry {
       background-color: #7ca982;
       width: 300px;
